@@ -8,7 +8,7 @@
   ],
   "routes": [
     {
-      "src": "/observation/now(.*)",
+      "src": "/api/observation/now(.*)",
       "dest": "app.js"
     }
   ]
