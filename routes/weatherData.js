@@ -1,7 +1,7 @@
 const axios = require('axios');
 const moment = require('moment')
 
-const {roundTo10Minutes, getMidnightToday} = require('./../utils/time')
+const { roundTo10Minutes, getMidnightToday } = require('./../utils/time')
 
 module.exports = function weatherData(app) {
   const timeseries = 'https://opendata.fmi.fi/timeseries';
@@ -39,9 +39,10 @@ module.exports = function weatherData(app) {
       endtime: roundTo10Minutes(new Date()),
       format: 'json',
       timeformat: 'sql',
-      fmisid: '101520',
+      keyword: 'synop_fi',
       precision: 'full',
       producer: 'opendata',
+      timestep: '60'
     };
 
     let data = false;
@@ -53,47 +54,35 @@ module.exports = function weatherData(app) {
       // if (process.env.ENV !== 'prod') {
       const start = process.hrtime();
       const difference = _differenceInMs(start)
-      console.log(`fetchWeatherForecastValues [FINISHED] ${difference.toLocaleString()} ms`);
+      console.log(`fetchWeatherObservationValues [FINISHED] ${difference.toLocaleString()} ms`);
       // }
     } catch (e) {
       console.error(e);
     }
 
     //const formattedData = formatResponse(data, meteorologicalParameters)
-    return data
+    return _formatResponse(data)
   }
 
-  function _formatResponse(data, parameters, modelLevel = false) {
-    let returnArray = {}
+  function _formatResponse(data) {
+    let returnArray = []
 
-    returnArray.location = data[0].name
-    returnArray.timezone = data[0].localtz
-    returnArray.origintime = data[0].origintime
-    returnArray.modtime = data[0].modtime
-    returnArray.dataset = {}
+    let = r_1d = 0
 
-    // initialize response format
-    const params = parameters.split(',')
-    params.forEach(function (item) {
-      let key = item
-      let obj = {}
-      obj[key] = []
-      returnArray.dataset[item] = []
-    })
+    for (let i = 0; i < data.length - 1; i++) {
+      if(data[i].fmisid === data[i+1].fmisid) {
+        r_1d = r_1d + data[i]['r_1h']
+      } else {
+        data[i]["r_1d"] = Number(r_1d.toFixed(1))
+        data[i]['t2mtdew'] = Number((data[i]['t2m'] - data[i]['dewpoint']).toFixed(1))
 
-    // populate forcast arrays 
-    data.forEach(function (item) {
-      params.forEach(function (parameter) {
-        if (parameter === 'SmartSymbol')
-          returnArray.dataset[parameter].push([moment(item.localtime).valueOf(), Math.floor(item[parameter])])
-        else if (modelLevel)
-          returnArray.dataset[parameter].push([moment(item.localtime).valueOf(), item.level, item[parameter]])
-        else
-          returnArray.dataset[parameter].push([moment(item.localtime).valueOf(), item[parameter]])
+        returnArray.push(data[i])
 
-      })
-    })
-    return data
+        r_1d = 0
+      }
+    }
+
+    return returnArray
   }
 
   function _differenceInMs(start) {
