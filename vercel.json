@@ -8,8 +8,8 @@
   ],
   "routes": [
     {
-      "src": "/routes/(.*)",
-      "dest": "/observation/now"
+      "src": "/observation/now/(.*)",
+      "dest": "app.js"
     }
   ]
 }
