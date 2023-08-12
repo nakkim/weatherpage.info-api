@@ -1,0 +1,16 @@
+# package directories
+node_modules
+jspm_packages
+dist
+
+# env file
+.env
+
+.DS_Store
+
+# IntelliJ IDEA
+.idea
+
+# Visual Studio Code
+.vscode
+.history
