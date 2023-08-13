@@ -16,4 +16,17 @@ function getMidnightToday(date) {
   return midnight;
 }
 
-module.exports = {getMidnightToday, roundTo10Minutes}
+function isValidDateFormat(dateString) {
+  // Regular expressions for the valid formats
+  const validFormats = [
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/,
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/,
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/,
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}Z$/
+  ];
+
+  // Check if the input string matches any of the valid formats
+  return validFormats.some(format => format.test(dateString));
+}
+
+module.exports = {getMidnightToday, roundTo10Minutes, isValidDateFormat}

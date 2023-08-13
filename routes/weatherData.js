@@ -1,22 +1,23 @@
 const axios = require('axios');
 const moment = require('moment')
 
-const { roundTo10Minutes, getMidnightToday } = require('./../utils/time')
+const { roundTo10Minutes, getMidnightToday, isValidDateFormat } = require('./../utils/time')
 
 module.exports = function weatherData(app) {
   const timeseries = 'https://opendata.fmi.fi/timeseries';
   const meteorologicalParameters = 'ri_10min,ws_10min,wg_10min,wd_10min,vis,wawa,t2m,n_man,r_1h,snow_aws,pressure,rh,dewpoint'
 
   async function _handleWeatherForecasts(req, res) {
-    const geoid = req.query.geoid
-
-    // if (!geoid) {
-    //   res.status(400).send();
-    //   return;
-    // }
+    
+    const time = req.query.time
+    if (time !== undefined && !isValidDateFormat(time)) {
+      res.send('Unknown time string format')
+      res.status(400).send();
+      return;
+    }
 
     const promises = {};
-    promises.observation = weatherForecast(geoid)
+    promises.observation = weatherForecast(time)
 
     const keys = Object.keys(promises);
     const results = await Promise.all(Object.values(promises));
@@ -31,12 +32,12 @@ module.exports = function weatherData(app) {
     res.send(data.observation);
   }
 
-  async function weatherForecast(geoid) {
+  async function weatherForecast(time) {
     const params = {
       param:
         `stationname as name,lat,lon,distance,region,fmisid,utctime as time,${meteorologicalParameters}`,
-      startTime: getMidnightToday(new Date()),
-      endtime: roundTo10Minutes(new Date()),
+      startTime: time !== undefined ? getMidnightToday(new Date(time)) : getMidnightToday(new Date()),
+      endtime: time !== undefined ? roundTo10Minutes(new Date(time)): roundTo10Minutes(new Date()),
       format: 'json',
       timeformat: 'sql',
       keyword: 'synop_fi',
@@ -60,7 +61,6 @@ module.exports = function weatherData(app) {
       console.error(e);
     }
 
-    //const formattedData = formatResponse(data, meteorologicalParameters)
     return _formatResponse(data)
   }
 
@@ -90,5 +90,5 @@ module.exports = function weatherData(app) {
     return (diff[0] * 1e9 + diff[1]) / 1e6;
   };
 
-  app.use('/observation/now', _handleWeatherForecasts);
+  app.use('/observation', _handleWeatherForecasts);
 }

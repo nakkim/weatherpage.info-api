@@ -6,6 +6,7 @@ const logger = require('morgan');
 const cors = require('cors');
 
 const handleWeatherData = require('./routes/weatherData');
+const paramsRouter = require('./routes/parameters');
 
 const app = express();
 const router = express.Router();
@@ -31,6 +32,7 @@ app.use('/', cors(), router);
 app.get('/', cors(), (req, res) => {
   res.send('Weathermap data API')
 })
+app.use('/parameters', paramsRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
