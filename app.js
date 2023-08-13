@@ -24,7 +24,7 @@ handleWeatherData(router);
 
 app.use('/', router);
 app.get('/', (req, res) => {
-  res.send('Meteogram data API')
+  res.send('Weathermap data API')
 })
 
 // catch 404 and forward to error handler
