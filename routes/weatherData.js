@@ -1,5 +1,6 @@
 const axios = require('axios');
 const moment = require('moment')
+const cors = require('cors')
 
 const { roundTo10Minutes, getMidnightToday, isValidDateFormat } = require('./../utils/time')
 
@@ -90,5 +91,5 @@ module.exports = function weatherData(app) {
     return (diff[0] * 1e9 + diff[1]) / 1e6;
   };
 
-  app.use('/observation', _handleWeatherForecasts);
+  app.use('/observation', cors(), _handleWeatherForecasts);
 }

@@ -32,7 +32,7 @@ app.use('/', cors(), router);
 app.get('/', cors(), (req, res) => {
   res.send('Weathermap data API')
 })
-app.use('/parameters', paramsRouter);
+app.use('/parameters', cors(), paramsRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
