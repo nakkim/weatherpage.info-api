@@ -3,11 +3,16 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const cors = require('cors');
 
 const handleWeatherData = require('./routes/weatherData');
 
 const app = express();
 const router = express.Router();
+
+app.use(cors({
+  origin: '*'
+}));
 
 // view engine setup
 // app.set('views', path.join(__dirname, 'views'));
@@ -22,18 +27,18 @@ app.use(logger(':method :url :status :res[content-length] - :response-time ms'))
 
 handleWeatherData(router);
 
-app.use('/', router);
-app.get('/', (req, res) => {
+app.use('/', cors(), router);
+app.get('/', cors(), (req, res) => {
   res.send('Weathermap data API')
 })
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
