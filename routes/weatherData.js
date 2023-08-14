@@ -68,18 +68,30 @@ module.exports = function weatherData(app) {
   function _formatResponse(data) {
     let returnArray = []
 
-    let = r_1d = 0
+    let r_1d = 0
+    let r_1h = null
 
     for (let i = 0; i < data.length - 1; i++) {
       if(data[i].fmisid === data[i+1].fmisid) {
         r_1d = r_1d + data[i]['r_1h']
+
+        if((new Date(data[i]['time'])).getUTCHours() === 0 && (new Date(data[i]['time'])).getUTCMinutes() === 0){
+          r_1h = data[i]['r_1h']
+        }
+
       } else {
         data[i]["r_1d"] = Number(r_1d.toFixed(1))
         data[i]['t2mtdew'] = Number((data[i]['t2m'] - data[i]['dewpoint']).toFixed(1))
+        if((new Date(data[i]['time'])).getUTCHours() === 0 && (new Date(data[i]['time'])).getUTCMinutes() === 0){
+          r_1h = data[i]['r_1h']
+        }
+        data[i]['r_1h'] = r_1h
+        
 
         returnArray.push(data[i])
 
         r_1d = 0
+        r_1h = null
       }
     }
 
