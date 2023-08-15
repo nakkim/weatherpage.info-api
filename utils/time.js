@@ -11,6 +11,16 @@ function roundTo10Minutes(date) {
   return flooredDate;
 }
 
+function getISODateInPast(timestring) {
+
+  let now = new Date()
+  if(timestring)
+  now = new Date(timestring);
+
+  const past = new Date(now.getTime() - 80 * 60000); // 60,000 milliseconds in a minute
+  return roundTo10Minutes(past).toISOString().split('.')[0]+"Z";
+}
+
 function getMidnightToday(date) {
   const midnight = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
   return midnight;
@@ -29,4 +39,4 @@ function isValidDateFormat(dateString) {
   return validFormats.some(format => format.test(dateString));
 }
 
-module.exports = {getMidnightToday, roundTo10Minutes, isValidDateFormat}
+module.exports = {getMidnightToday, getISODateInPast, roundTo10Minutes, isValidDateFormat}
