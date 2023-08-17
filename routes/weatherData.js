@@ -49,7 +49,7 @@ module.exports = function weatherData(app) {
       keyword: 'synop_fi',
       precision: 'full',
       producer: 'opendata',
-      timestep: '60'
+      timestep: '10'
     };
 
     let data = false;
@@ -74,9 +74,19 @@ module.exports = function weatherData(app) {
     for (let i = 0; i < data.length - 1; i++) {
       if (data[i].fmisid === data[i + 1].fmisid) {
         r_1d = r_1d + data[i]['r_1h']
-
         if ((new Date(data[i]['time'])).getUTCHours() === 0 && (new Date(data[i]['time'])).getUTCMinutes() === 0) {
           r_1h = data[i]['r_1h']
+        }
+
+        // final key
+        if (i === data.length - 2) {
+          data[i+1]["r_1d"] = Number(r_1d.toFixed(1))
+          data[i+1]['t2mtdew'] = Number((data[i+1]['t2m'] - data[i+1]['dewpoint']).toFixed(1))
+          if ((new Date(data[i+1]['time'])).getUTCHours() === 0 && (new Date(data[i+1]['time'])).getUTCMinutes() === 0) {
+            r_1h = data[i+1]['r_1h']
+          }
+          data[i+1]['r_1h'] = r_1h
+          returnArray.push(data[i+1])
         }
 
       } else {
@@ -86,8 +96,6 @@ module.exports = function weatherData(app) {
           r_1h = data[i]['r_1h']
         }
         data[i]['r_1h'] = r_1h
-        
-
         returnArray.push(data[i])
 
         r_1d = 0
