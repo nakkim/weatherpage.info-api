@@ -26,6 +26,20 @@ function getMidnightToday(date) {
   return midnight;
 }
 
+function minutesFromMidnight(timestring) {
+
+  let now = new Date()
+  if(timestring)
+  now = new Date(timestring);
+
+  const midnight = new Date(now);
+  midnight.setHours(0, 0, 0, 0); // Set to midnight
+
+  const millisecondsPassed = now - midnight;
+  const minutesPassed = Math.floor(millisecondsPassed / (1000 * 60));
+  return minutesPassed;
+}
+
 function isValidDateFormat(dateString) {
   // Regular expressions for the valid formats
   const validFormats = [
@@ -39,4 +53,4 @@ function isValidDateFormat(dateString) {
   return validFormats.some(format => format.test(dateString));
 }
 
-module.exports = {getMidnightToday, getISODateInPast, roundTo10Minutes, isValidDateFormat}
+module.exports = {getMidnightToday, getISODateInPast, roundTo10Minutes, isValidDateFormat, minutesFromMidnight}
